@@ -1,4 +1,4 @@
-package main
+package implementations
 
 import (
 	"github.com/aboglioli/data-link-layer/conversors"
@@ -8,7 +8,7 @@ import (
 
 type manager struct{}
 
-func NewManager() interfaces.Manager {
+func NewManager() interfaces.Protocol {
 	return &manager{}
 }
 

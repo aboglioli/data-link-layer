@@ -15,3 +15,11 @@ func NewFrame(s int, a int, p string) *Frame {
 		Payload: p,
 	}
 }
+
+func (f *Frame) NextSeq() {
+	f.Seq++
+}
+
+func (f *Frame) NextAck() {
+	f.Ack++
+}

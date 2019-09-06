@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/aboglioli/data-link-layer/config"
+	"github.com/aboglioli/data-link-layer/implementations"
 )
 
 type Server struct {
@@ -13,7 +14,7 @@ type Server struct {
 
 func NewServer() (*Server, error) {
 	c := config.Get()
-	listener, err := net.Listen(c.Communication, c.Address())
+	listener, err := net.Listen(c.CommunicationMethod(), c.Address())
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +34,7 @@ func (s *Server) Listen() <-chan *Client {
 				fmt.Println("[ERROR]", err)
 			}
 
-			c <- NewClient(NewTCPTransmissor(conn))
+			c <- NewClient(implementations.NewTCPTransmissor(conn))
 		}
 	}()
 
