@@ -1,3 +1,5 @@
+github.com/aboglioli/data-link-layer v0.0.0-20190906225115-22075293debb h1:PGDj/O+6VWQb6SGqnhag8FDBm+WK4yfqooz0oQ30JaY=
+github.com/aboglioli/data-link-layer v0.0.0-20190906225115-22075293debb/go.mod h1:kswD6UIkO5uvRy9wCzXjBHI4IWOm/UOmTuYbrjK/XRo=
 github.com/tarm/serial v0.0.0-20180830185346-98f6abe2eb07 h1:UyzmZLoiDWMRywV4DUYb9Fbt8uiOSooupjTq10vpvnU=
 github.com/tarm/serial v0.0.0-20180830185346-98f6abe2eb07/go.mod h1:kDXzergiv9cbyO7IOYJZWg1U88JhDg3PB6klq9Hg2pA=
 golang.org/x/sys v0.0.0-20190904154756-749cb33beabd h1:DBH9mDw0zluJT/R+nGuV3jWFWLFaHyYZWD4tOT+cjn0=
