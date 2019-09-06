@@ -53,7 +53,7 @@ func Get() *Config {
 			Communication:    TCP,
 			Port:             7788,
 			ConcurrentFrames: 3,
-			MinFrameLength:   5,
+			MinFrameLength:   8,
 			MaxFrameLength:   64,
 			Timeout:          500 * time.Millisecond,
 			PayloadLength:    3,

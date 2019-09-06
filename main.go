@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aboglioli/data-link-layer/types"
+	"github.com/aboglioli/data-link-layer/frame"
 )
 
 func startServer() {
@@ -21,7 +21,7 @@ func startServer() {
 			fmt.Println("[ERROR]", err)
 		} else {
 			fmt.Println(f)
-			c.Send(&types.Frame{1, 1, "OK"})
+			c.Send(&frame.Frame{frame.ACK, 1, 1, "OK"})
 		}
 	}
 }
@@ -32,7 +32,7 @@ func startClient() {
 		panic(err)
 	}
 
-	err = c.Send(&types.Frame{12, 13, "Hola"})
+	err = c.Send(&frame.Frame{frame.ACK, 12, 13, "Hola"})
 	if err != nil {
 		panic(err)
 	}

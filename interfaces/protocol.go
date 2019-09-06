@@ -1,10 +1,10 @@
 package interfaces
 
 import (
-	"github.com/aboglioli/data-link-layer/types"
+	"github.com/aboglioli/data-link-layer/frame"
 )
 
 type Protocol interface {
-	ConvertToFrames([]byte) (types.Frames, error)
-	ConvertToBytes(types.Frames) ([]byte, error)
+	ConvertToFrames([]byte) (frame.Frames, error)
+	ConvertToBytes(frame.Frames) ([]byte, error)
 }

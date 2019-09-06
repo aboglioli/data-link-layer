@@ -14,8 +14,8 @@ func TestSplitMessgeIntoFrames(t *testing.T) {
 		t.Error(err)
 	}
 
-	if len(f) != 6 {
-		t.Errorf("Se esperan 6 tramas, se obtuvieron %d\n", len(f))
+	if len(f) != 8 {
+		t.Errorf("Se esperan 8 tramas, se obtuvieron %d\n", len(f))
 	}
 
 	// Error por mensaje vacío
@@ -36,8 +36,8 @@ func TestGenerateSeq(t *testing.T) {
 		t.Error(err)
 	}
 
-	if len(f) != 6 {
-		t.Errorf("Se esperan 6 tramas, se obtuvieron %d\n", len(f))
+	if len(f) != 8 {
+		t.Errorf("Se esperan 8 tramas, se obtuvieron %d\n", len(f))
 	}
 
 	for i := 0; i < len(f); i++ {

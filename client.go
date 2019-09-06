@@ -6,7 +6,7 @@ import (
 	"github.com/aboglioli/data-link-layer/config"
 	"github.com/aboglioli/data-link-layer/implementations"
 	"github.com/aboglioli/data-link-layer/interfaces"
-	"github.com/aboglioli/data-link-layer/types"
+	"github.com/aboglioli/data-link-layer/frame"
 )
 
 type Client struct {
@@ -34,8 +34,8 @@ func NewClient(t interfaces.Transmissor) *Client {
 	}
 }
 
-func (c *Client) Send(f *types.Frame) error {
-	msg, err := c.protocol.ConvertToBytes(types.Frames{f})
+func (c *Client) Send(f *frame.Frame) error {
+	msg, err := c.protocol.ConvertToBytes(frame.Frames{f})
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func (c *Client) Send(f *types.Frame) error {
 	return c.transmissor.ToPhysicalLayer(msg)
 }
 
-func (c *Client) Recv() (*types.Frame, error) {
+func (c *Client) Recv() (*frame.Frame, error) {
 	msg, err := c.transmissor.FromPhysicalLayer()
 	if err != nil {
 		return nil, err

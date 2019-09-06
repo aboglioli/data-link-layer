@@ -1,4 +1,4 @@
-package conversors
+package converters
 
 import (
 	"errors"
@@ -7,19 +7,15 @@ import (
 	"strings"
 
 	"github.com/aboglioli/data-link-layer/config"
-	"github.com/aboglioli/data-link-layer/types"
+	"github.com/aboglioli/data-link-layer/frame"
 )
 
-func FrameToBytes(f *types.Frame) ([]byte, error) {
+func FrameToBytes(f *frame.Frame) ([]byte, error) {
 	if f.Ack < 0 || f.Seq < 0 {
 		return nil, errors.New("SEQ o ACK inválido")
 	}
 
-	if f.Payload == "" {
-		return nil, errors.New("Mensaje vacío")
-	}
-
-	str := fmt.Sprintf("%d:%d:%s", f.Seq, f.Ack, f.Payload)
+	str := fmt.Sprintf("%s:%d:%d:%s", f.Type, f.Seq, f.Ack, f.Payload)
 
 	c := config.Get()
 	if len(str) < c.MinFrameLength || len(str) > c.MaxFrameLength {
@@ -29,7 +25,7 @@ func FrameToBytes(f *types.Frame) ([]byte, error) {
 	return []byte(str), nil
 }
 
-func BytesToFrame(bytes []byte) (*types.Frame, error) {
+func BytesToFrame(bytes []byte) (*frame.Frame, error) {
 	str := string(filterMessage(bytes))
 
 	c := config.Get()
@@ -37,7 +33,7 @@ func BytesToFrame(bytes []byte) (*types.Frame, error) {
 		return nil, errors.New("Tamaño de trama")
 	}
 
-	if strings.Count(str, ":") != 2 {
+	if strings.Count(str, ":") != 3 {
 		return nil, errors.New("Separadores de trama inválidos")
 	}
 
@@ -46,23 +42,21 @@ func BytesToFrame(bytes []byte) (*types.Frame, error) {
 		return nil, errors.New("Separadores de trama inválidos")
 	}
 
-	seq, err := strconv.Atoi(arr[0])
+	t := frame.Flag(arr[0])
+
+	seq, err := strconv.Atoi(arr[1])
 	if err != nil {
 		return nil, errors.New("SEQ inválido")
 	}
 
-	ack, err := strconv.Atoi(arr[1])
+	ack, err := strconv.Atoi(arr[2])
 	if err != nil {
 		return nil, errors.New("ACK inválido")
 	}
 
 	payload := arr[2]
 
-	if len(payload) <= 0 {
-		return nil, errors.New("Payload vacío")
-	}
-
-	return types.NewFrame(seq, ack, payload), nil
+	return frame.New(t, seq, ack, payload), nil
 }
 
 func filterMessage(msg []byte) []byte {
