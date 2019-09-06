@@ -1,15 +1,13 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"net"
 )
 
 type Server struct {
-	listener      net.Listener
-	transmissor   Transmissor
-	NewConnection chan bool
+	listener net.Listener
+	manager  Manager
 }
 
 func NewServer() (*Server, error) {
@@ -21,34 +19,23 @@ func NewServer() (*Server, error) {
 
 	return &Server{
 		listener: listener,
+		manager:  NewManager(),
 	}, nil
 }
 
-func (s *Server) Listen() {
-	for {
-		conn, err := s.listener.Accept()
-		if err != nil {
-			fmt.Println("[ERROR]", err)
+func (s *Server) Listen() <-chan *Client {
+	c := make(chan *Client)
+
+	go func() {
+		for {
+			conn, err := s.listener.Accept()
+			if err != nil {
+				fmt.Println("[ERROR]", err)
+			}
+
+			c <- NewClient(NewTCPTransmissor(conn))
 		}
+	}()
 
-		s.transmissor = NewTCPTransmissor(conn)
-		f, err := s.Recv()
-		fmt.Println(f)
-	}
-}
-
-func (s *Server) Send(f *Frame) error {
-	if s.transmissor != nil {
-		return s.transmissor.ToPhysicalLayer(f)
-	}
-
-	return errors.New("No hay clientes conecteados")
-}
-
-func (s *Server) Recv() (*Frame, error) {
-	if s.transmissor != nil {
-		return s.transmissor.FromPhysicalLayer()
-	}
-
-	return nil, errors.New("No hay clientes conectados")
+	return c
 }

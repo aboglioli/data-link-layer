@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"strings"
 )
 
@@ -11,11 +12,19 @@ func startServer() {
 		panic(err)
 	}
 
-	s.Listen()
+	client := s.Listen()
+	for c := range client {
+		f, err := c.Recv()
+		if err != nil {
+			fmt.Println("[ERROR]", err)
+		} else {
+			fmt.Println(f)
+		}
+	}
 }
 
 func startClient() {
-	c, err := NewClient()
+	c, err := ConnectClient()
 	if err != nil {
 		panic(err)
 	}

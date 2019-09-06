@@ -7,29 +7,24 @@ import (
 
 // Interfaz de comunicación
 type Transmissor interface {
-	ToPhysicalLayer(f *Frame) error
-	FromPhysicalLayer() (*Frame, error)
+	ToPhysicalLayer([]byte) error
+	FromPhysicalLayer() ([]byte, error)
 }
 
 // Implementación sobre TCP y Sockets
 type connection struct {
-	socket     net.Conn
-	serializer Serializer
+	socket  net.Conn
+	manager Manager
 }
 
 func NewTCPTransmissor(conn net.Conn) Transmissor {
 	return &connection{
-		socket:     conn,
-		serializer: NewSerializer(),
+		socket:  conn,
+		manager: NewManager(),
 	}
 }
 
-func (c *connection) ToPhysicalLayer(f *Frame) error {
-	msg, err := c.serializer.FrameToBytes(f)
-	if err != nil {
-		return err
-	}
-
+func (c *connection) ToPhysicalLayer(msg []byte) error {
 	l, err := c.socket.Write(msg)
 	if l <= 0 || err != nil {
 		return errors.New("Error en envío")
@@ -38,12 +33,12 @@ func (c *connection) ToPhysicalLayer(f *Frame) error {
 	return nil
 }
 
-func (c *connection) FromPhysicalLayer() (*Frame, error) {
+func (c *connection) FromPhysicalLayer() ([]byte, error) {
 	msg := make([]byte, 4096)
 	l, err := c.socket.Read(msg)
 	if err != nil || l <= 0 {
 		return nil, errors.New("Error en recepción")
 	}
 
-	return c.serializer.BytesToFrame(msg[0:l])
+	return msg[0:l], nil
 }
