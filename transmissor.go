@@ -25,12 +25,12 @@ func NewTCPTransmissor(conn net.Conn) Transmissor {
 }
 
 func (c *connection) ToPhysicalLayer(f *Frame) error {
-	str, err := c.serializer.FrameToString(f)
+	msg, err := c.serializer.FrameToBytes(f)
 	if err != nil {
 		return err
 	}
 
-	l, err := c.socket.Write([]byte(str))
+	l, err := c.socket.Write(msg)
 	if l <= 0 || err != nil {
 		return errors.New("Error en envío")
 	}
@@ -45,15 +45,5 @@ func (c *connection) FromPhysicalLayer() (*Frame, error) {
 		return nil, errors.New("Error en recepción")
 	}
 
-	return c.serializer.StringToFrame(string(filterMessage(msg)))
-}
-
-func filterMessage(msg []byte) []byte {
-	filter := make([]byte, 0, len(msg))
-	for _, b := range msg {
-		if b != 0 {
-			filter = append(filter, b)
-		}
-	}
-	return filter
+	return c.serializer.BytesToFrame(msg[0:l])
 }

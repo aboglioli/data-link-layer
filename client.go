@@ -3,7 +3,7 @@ package main
 import "net"
 
 type Client struct {
-	Transmissor Transmissor
+	transmissor Transmissor
 }
 
 func NewClient() (*Client, error) {
@@ -14,6 +14,14 @@ func NewClient() (*Client, error) {
 	}
 
 	return &Client{
-		Transmissor: NewTCPTransmissor(conn),
+		transmissor: NewTCPTransmissor(conn),
 	}, nil
+}
+
+func (c *Client) Send(f *Frame) error {
+	return c.transmissor.ToPhysicalLayer(f)
+}
+
+func (c *Client) Recv() (*Frame, error) {
+	return c.transmissor.FromPhysicalLayer()
 }

@@ -20,7 +20,10 @@ func startClient() {
 		panic(err)
 	}
 
-	c.Transmissor.ToPhysicalLayer(&Frame{12, 13, "Hola"})
+	err = c.Send(&Frame{12, 13, "Hola"})
+	if err != nil {
+		panic(err)
+	}
 }
 
 func main() {

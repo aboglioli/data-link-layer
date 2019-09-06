@@ -12,9 +12,12 @@ const (
 )
 
 type Config struct {
-	Communication string
-	Port          int
-	Host          string
+	Communication  string
+	Port           int
+	Host           string
+	MaxFrames      int
+	MinFrameLength int
+	MaxFrameLength int
 }
 
 func (c *Config) Address() string {
@@ -29,8 +32,11 @@ var (
 func GetConfig() *Config {
 	o.Do(func() {
 		c = &Config{
-			Communication: TCP,
-			Port:          7788,
+			Communication:  TCP,
+			Port:           7788,
+			MaxFrames:      3,
+			MinFrameLength: 5,
+			MaxFrameLength: 64,
 		}
 	})
 

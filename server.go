@@ -1,13 +1,15 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net"
 )
 
 type Server struct {
-	listener    net.Listener
-	Transmissor Transmissor
+	listener      net.Listener
+	transmissor   Transmissor
+	NewConnection chan bool
 }
 
 func NewServer() (*Server, error) {
@@ -26,11 +28,27 @@ func (s *Server) Listen() {
 	for {
 		conn, err := s.listener.Accept()
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("[ERROR]", err)
 		}
 
-		s.Transmissor = NewTCPTransmissor(conn)
-		f, err := s.Transmissor.FromPhysicalLayer()
-		fmt.Println(f, err)
+		s.transmissor = NewTCPTransmissor(conn)
+		f, err := s.Recv()
+		fmt.Println(f)
 	}
+}
+
+func (s *Server) Send(f *Frame) error {
+	if s.transmissor != nil {
+		return s.transmissor.ToPhysicalLayer(f)
+	}
+
+	return errors.New("No hay clientes conecteados")
+}
+
+func (s *Server) Recv() (*Frame, error) {
+	if s.transmissor != nil {
+		return s.transmissor.FromPhysicalLayer()
+	}
+
+	return nil, errors.New("No hay clientes conectados")
 }

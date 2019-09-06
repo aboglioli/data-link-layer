@@ -8,8 +8,8 @@ import (
 )
 
 type Serializer interface {
-	FrameToString(*Frame) (string, error)
-	StringToFrame(string) (*Frame, error)
+	FrameToBytes(*Frame) ([]byte, error)
+	BytesToFrame([]byte) (*Frame, error)
 }
 
 type serializer struct {
@@ -22,27 +22,40 @@ func NewSerializer() Serializer {
 	}
 }
 
-func (s *serializer) FrameToString(f *Frame) (string, error) {
+func (s *serializer) FrameToBytes(f *Frame) ([]byte, error) {
 	if f.Ack < 0 || f.Seq < 0 {
-		return "", errors.New("SEQ o ACK inválido")
+		return nil, errors.New("SEQ o ACK inválido")
 	}
 
 	if f.Payload == "" {
-		return "", errors.New("Mensaje vacío")
+		return nil, errors.New("Mensaje vacío")
 	}
 
-	return fmt.Sprintf("%d:%d:%s", f.Seq, f.Ack, f.Payload), nil
+	str := fmt.Sprintf("%d:%d:%s", f.Seq, f.Ack, f.Payload)
+
+	c := GetConfig()
+	if len(str) < c.MinFrameLength || len(str) > c.MaxFrameLength {
+		return nil, errors.New("Tamaño de trama")
+	}
+
+	return []byte(str), nil
 }
 
-func (s *serializer) StringToFrame(str string) (*Frame, error) {
-	fmt.Println(str)
+func (s *serializer) BytesToFrame(bytes []byte) (*Frame, error) {
+	str := string(filterMessage(bytes))
+
+	c := GetConfig()
+	if len(str) < c.MinFrameLength || len(str) > c.MaxFrameLength {
+		return nil, errors.New("Tamaño de trama")
+	}
+
 	if strings.Count(str, ":") != 2 {
-		return nil, errors.New("Trama inválida")
+		return nil, errors.New("Separadores de trama inválidos")
 	}
 
 	arr := strings.Split(str, ":")
 	if len(arr) != 3 {
-		return nil, errors.New("Trama inválida")
+		return nil, errors.New("Separadores de trama inválidos")
 	}
 
 	seq, err := strconv.Atoi(arr[0])
@@ -62,4 +75,14 @@ func (s *serializer) StringToFrame(str string) (*Frame, error) {
 	}
 
 	return NewFrame(seq, ack, payload), nil
+}
+
+func filterMessage(msg []byte) []byte {
+	filter := make([]byte, 0, len(msg))
+	for _, b := range msg {
+		if b != 0 {
+			filter = append(filter, b)
+		}
+	}
+	return filter
 }
