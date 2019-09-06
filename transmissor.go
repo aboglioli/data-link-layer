@@ -3,24 +3,18 @@ package main
 import (
 	"errors"
 	"net"
-)
 
-// Interfaz de comunicación
-type Transmissor interface {
-	ToPhysicalLayer([]byte) error
-	FromPhysicalLayer() ([]byte, error)
-}
+	"github.com/aboglioli/data-link-layer/interfaces"
+)
 
 // Implementación sobre TCP y Sockets
 type connection struct {
-	socket  net.Conn
-	manager Manager
+	socket net.Conn
 }
 
-func NewTCPTransmissor(conn net.Conn) Transmissor {
+func NewTCPTransmissor(conn net.Conn) interfaces.Transmissor {
 	return &connection{
-		socket:  conn,
-		manager: NewManager(),
+		socket: conn,
 	}
 }
 

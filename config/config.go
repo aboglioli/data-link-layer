@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"fmt"
@@ -29,7 +29,7 @@ var (
 	o sync.Once
 )
 
-func GetConfig() *Config {
+func Get() *Config {
 	o.Do(func() {
 		c = &Config{
 			Communication:  TCP,

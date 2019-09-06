@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"strings"
+
+	"github.com/aboglioli/data-link-layer/types"
 )
 
 func startServer() {
@@ -19,6 +21,7 @@ func startServer() {
 			fmt.Println("[ERROR]", err)
 		} else {
 			fmt.Println(f)
+			c.Send(&types.Frame{1, 1, "OK"})
 		}
 	}
 }
@@ -29,10 +32,12 @@ func startClient() {
 		panic(err)
 	}
 
-	err = c.Send(&Frame{12, 13, "Hola"})
+	err = c.Send(&types.Frame{12, 13, "Hola"})
 	if err != nil {
 		panic(err)
 	}
+	f, _ := c.Recv()
+	fmt.Println(f)
 }
 
 func main() {

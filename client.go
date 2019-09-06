@@ -1,14 +1,20 @@
 package main
 
-import "net"
+import (
+	"net"
+
+	"github.com/aboglioli/data-link-layer/config"
+	"github.com/aboglioli/data-link-layer/interfaces"
+	"github.com/aboglioli/data-link-layer/types"
+)
 
 type Client struct {
-	transmissor Transmissor
-	manager     Manager
+	transmissor interfaces.Transmissor
+	manager     interfaces.Manager
 }
 
 func ConnectClient() (*Client, error) {
-	c := GetConfig()
+	c := config.Get()
 	conn, err := net.Dial(c.Communication, c.Address())
 	if err != nil {
 		return nil, err
@@ -20,15 +26,15 @@ func ConnectClient() (*Client, error) {
 	}, nil
 }
 
-func NewClient(t Transmissor) *Client {
+func NewClient(t interfaces.Transmissor) *Client {
 	return &Client{
 		transmissor: t,
 		manager:     NewManager(),
 	}
 }
 
-func (c *Client) Send(f *Frame) error {
-	msg, err := c.manager.ConvertToBytes([]*Frame{f})
+func (c *Client) Send(f *types.Frame) error {
+	msg, err := c.manager.ConvertToBytes(types.Frames{f})
 	if err != nil {
 		return err
 	}
@@ -36,7 +42,7 @@ func (c *Client) Send(f *Frame) error {
 	return c.transmissor.ToPhysicalLayer(msg)
 }
 
-func (c *Client) Recv() (*Frame, error) {
+func (c *Client) Recv() (*types.Frame, error) {
 	msg, err := c.transmissor.FromPhysicalLayer()
 	if err != nil {
 		return nil, err

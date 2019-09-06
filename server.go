@@ -3,15 +3,16 @@ package main
 import (
 	"fmt"
 	"net"
+
+	"github.com/aboglioli/data-link-layer/config"
 )
 
 type Server struct {
 	listener net.Listener
-	manager  Manager
 }
 
 func NewServer() (*Server, error) {
-	c := GetConfig()
+	c := config.Get()
 	listener, err := net.Listen(c.Communication, c.Address())
 	if err != nil {
 		return nil, err
@@ -19,7 +20,6 @@ func NewServer() (*Server, error) {
 
 	return &Server{
 		listener: listener,
-		manager:  NewManager(),
 	}, nil
 }
 

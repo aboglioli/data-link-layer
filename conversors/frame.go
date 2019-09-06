@@ -1,4 +1,4 @@
-package main
+package conversors
 
 import (
 	"errors"
@@ -10,22 +10,7 @@ import (
 	"github.com/aboglioli/data-link-layer/types"
 )
 
-type Serializer interface {
-	FrameToBytes(*types.Frame) ([]byte, error)
-	BytesToFrame([]byte) (*types.Frame, error)
-}
-
-type serializer struct {
-	sep string
-}
-
-func NewSerializer() Serializer {
-	return &serializer{
-		sep: ":", // separador
-	}
-}
-
-func (s *serializer) FrameToBytes(f *types.Frame) ([]byte, error) {
+func FrameToBytes(f *types.Frame) ([]byte, error) {
 	if f.Ack < 0 || f.Seq < 0 {
 		return nil, errors.New("SEQ o ACK inválido")
 	}
@@ -44,7 +29,7 @@ func (s *serializer) FrameToBytes(f *types.Frame) ([]byte, error) {
 	return []byte(str), nil
 }
 
-func (s *serializer) BytesToFrame(bytes []byte) (*types.Frame, error) {
+func BytesToFrame(bytes []byte) (*types.Frame, error) {
 	str := string(filterMessage(bytes))
 
 	c := config.Get()
