@@ -1,9 +1,8 @@
-package implementations
+package physical
 
 import (
 	"errors"
 
-	"github.com/aboglioli/data-link-layer/interfaces"
 	"github.com/tarm/serial"
 )
 
@@ -12,7 +11,7 @@ type serialTransmissor struct {
 	port *serial.Port
 }
 
-func NewSerialTransmissor() interfaces.Transmissor {
+func NewSerialTransmissor() Transmissor {
 	c := &serial.Config{Name: "COM5", Baud: 115200}
 	port, err := serial.OpenPort(c)
 	if err != nil {

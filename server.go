@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/aboglioli/data-link-layer/config"
-	"github.com/aboglioli/data-link-layer/implementations"
+	"github.com/aboglioli/data-link-layer/physical"
 )
 
 type Server struct {
@@ -34,7 +34,7 @@ func (s *Server) Listen() <-chan *Client {
 				fmt.Println("[ERROR]", err)
 			}
 
-			c <- NewClient(implementations.NewTCPTransmissor(conn))
+			c <- NewClient(physical.NewTCPTransmissor(conn))
 		}
 	}()
 

@@ -1,4 +1,4 @@
-package implementations
+package protocol
 
 import (
 	"fmt"
@@ -38,11 +38,5 @@ func TestGenerateSeq(t *testing.T) {
 
 	if len(f) != 8 {
 		t.Errorf("Se esperan 8 tramas, se obtuvieron %d\n", len(f))
-	}
-
-	for i := 0; i < len(f); i++ {
-		if f[i].Seq != i {
-			t.Errorf("Número de seq %d inválido para trama %d", i, f[i].Seq)
-		}
 	}
 }

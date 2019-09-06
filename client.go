@@ -4,14 +4,14 @@ import (
 	"net"
 
 	"github.com/aboglioli/data-link-layer/config"
-	"github.com/aboglioli/data-link-layer/implementations"
-	"github.com/aboglioli/data-link-layer/interfaces"
 	"github.com/aboglioli/data-link-layer/frame"
+	"github.com/aboglioli/data-link-layer/physical"
+	"github.com/aboglioli/data-link-layer/protocol"
 )
 
 type Client struct {
-	transmissor interfaces.Transmissor
-	protocol    interfaces.Protocol
+	transmissor physical.Transmissor
+	protocol    protocol.Interface
 }
 
 func ConnectClient() (*Client, error) {
@@ -22,20 +22,18 @@ func ConnectClient() (*Client, error) {
 	}
 
 	return &Client{
-		transmissor: implementations.NewTCPTransmissor(conn),
-		protocol:    implementations.NewManager(),
+		transmissor: physical.NewTCPTransmissor(conn),
 	}, nil
 }
 
-func NewClient(t interfaces.Transmissor) *Client {
+func NewClient(t physical.Transmissor) *Client {
 	return &Client{
 		transmissor: t,
-		protocol:    implementations.NewManager(),
 	}
 }
 
 func (c *Client) Send(f *frame.Frame) error {
-	msg, err := c.protocol.ConvertToBytes(frame.Frames{f})
+	msg, err := f.ToBytes()
 	if err != nil {
 		return err
 	}
@@ -49,7 +47,5 @@ func (c *Client) Recv() (*frame.Frame, error) {
 		return nil, err
 	}
 
-	f, err := c.protocol.ConvertToFrames(msg)
-
-	return f[0], err
+	return frame.FromBytes(msg)
 }

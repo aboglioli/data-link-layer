@@ -2,7 +2,11 @@ package frame
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
+	"strings"
+
+	"github.com/aboglioli/data-link-layer/config"
 )
 
 // Flags: SYN, FIN, ACK, étc
@@ -34,46 +38,67 @@ func New(f Flag, seq int, ack int, payload string) *Frame {
 	}
 }
 
-func FromRaw(r *RawFrame) (*Frame, error) {
-	seq, err := strconv.Atoi(string(r.Seq))
+func FromBytes(bytes []byte) (*Frame, error) {
+	str := string(filterMessage(bytes))
+
+	c := config.Get()
+	if len(str) < c.MinFrameLength || len(str) > c.MaxFrameLength {
+		return nil, errors.New("Tamaño de trama")
+	}
+
+	if strings.Count(str, ":") != 3 {
+		return nil, errors.New("Separadores de trama inválidos")
+	}
+
+	arr := strings.Split(str, ":")
+	if len(arr) != 3 {
+		return nil, errors.New("Separadores de trama inválidos")
+	}
+
+	t := Flag(arr[0])
+
+	seq, err := strconv.Atoi(arr[1])
 	if err != nil {
-		return nil, err
+		return nil, errors.New("SEQ inválido")
 	}
 
-	ack, err := strconv.Atoi(string(r.Ack))
+	ack, err := strconv.Atoi(arr[2])
 	if err != nil {
-		return nil, err
+		return nil, errors.New("ACK inválido")
 	}
 
-	payload := string(r.Payload[:])
-	checksum := string(r.Checksum[:])
+	payload := arr[2]
 
-	if payload != checksum {
-		return nil, errors.New("Diferencia entre payload y checksum")
-	}
-
-	flag := getFlagFromByte(r.Flags)
-
-	return New(flag, seq, ack, payload), nil
+	return New(t, seq, ack, payload), nil
 }
 
-func (f *Frame) NextSeq() {
+func (f *Frame) NextSeq() int {
 	f.Seq++
+	return f.Seq
 }
 
-func (f *Frame) NextAck() {
+func (f *Frame) NextAck() int {
 	f.Ack++
+	return f.Ack
 }
 
-func getFlagFromByte(b byte) Flag {
-	switch b {
-	case 0xF0:
-		return SYN
-	case 0x0F:
-		return FIN
-	case 0xFF:
-		return ACK
+func (f *Frame) Swap() {
+	ack := f.Ack
+	f.Ack = f.Seq + 1
+	f.Seq = ack
+}
+
+func (f *Frame) ToBytes() ([]byte, error) {
+	if f.Ack < 0 || f.Seq < 0 {
+		return nil, errors.New("SEQ o ACK inválido")
 	}
 
-	return ERROR
+	str := fmt.Sprintf("%s:%d:%d:%s", f.Type, f.Seq, f.Ack, f.Payload)
+
+	c := config.Get()
+	if len(str) < c.MinFrameLength || len(str) > c.MaxFrameLength {
+		return nil, errors.New("Tamaño de trama")
+	}
+
+	return []byte(str), nil
 }

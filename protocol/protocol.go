@@ -1,16 +1,16 @@
-package implementations
+package protocol
 
 import (
 	"errors"
 
 	"github.com/aboglioli/data-link-layer/config"
 	"github.com/aboglioli/data-link-layer/frame"
-	"github.com/aboglioli/data-link-layer/interfaces"
+	"github.com/aboglioli/data-link-layer/physical"
 )
 
 type protocol struct {
 	payloadLength int
-	transmissor   interfaces.Transmissor
+	transmissor   physical.Transmissor
 }
 
 func NewProtocol() *protocol {

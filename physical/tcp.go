@@ -1,10 +1,8 @@
-package implementations
+package physical
 
 import (
 	"errors"
 	"net"
-
-	"github.com/aboglioli/data-link-layer/interfaces"
 )
 
 // Implementación sobre TCP y Sockets
@@ -12,7 +10,7 @@ type tcpTransmissor struct {
 	socket net.Conn
 }
 
-func NewTCPTransmissor(conn net.Conn) interfaces.Transmissor {
+func NewTCPTransmissor(conn net.Conn) Transmissor {
 	return &tcpTransmissor{
 		socket: conn,
 	}

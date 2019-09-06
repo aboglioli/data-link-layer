@@ -1,4 +1,4 @@
-package interfaces
+package physical
 
 // Interfaz de comunicación
 type Transmissor interface {
