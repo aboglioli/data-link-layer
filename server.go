@@ -34,7 +34,7 @@ func (s *Server) Listen() <-chan *Client {
 				fmt.Println("[ERROR]", err)
 			}
 
-			c <- NewClient(physical.NewTCPTransmissor(conn))
+			c <- NewClient(physical.NewTransmissor(conn))
 		}
 	}()
 

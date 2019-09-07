@@ -1,7 +1,7 @@
 package physical
 
 // Interfaz de comunicación
-type Transmissor interface {
+type Interface interface {
 	ToPhysicalLayer([]byte) error
 	FromPhysicalLayer() ([]byte, error)
 }

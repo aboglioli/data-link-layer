@@ -10,7 +10,7 @@ import (
 
 type protocol struct {
 	payloadLength int
-	transmissor   physical.Transmissor
+	transmissor   physical.Interface
 }
 
 func NewProtocol() *protocol {

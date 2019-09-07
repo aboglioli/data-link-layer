@@ -10,7 +10,7 @@ import (
 )
 
 type Client struct {
-	transmissor physical.Transmissor
+	transmissor physical.Interface
 	protocol    protocol.Interface
 }
 
@@ -22,11 +22,11 @@ func ConnectClient() (*Client, error) {
 	}
 
 	return &Client{
-		transmissor: physical.NewTCPTransmissor(conn),
+		transmissor: physical.NewTransmissor(conn),
 	}, nil
 }
 
-func NewClient(t physical.Transmissor) *Client {
+func NewClient(t physical.Interface) *Client {
 	return &Client{
 		transmissor: t,
 	}
