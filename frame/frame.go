@@ -1,11 +1,6 @@
 package frame
 
 import (
-	"errors"
-	"fmt"
-	"strconv"
-	"strings"
-
 	"github.com/aboglioli/data-link-layer/config"
 	"github.com/aboglioli/data-link-layer/packet"
 )
@@ -17,8 +12,8 @@ type FrameKind string
 
 const (
 	DATA FrameKind = "DATA"
-	ACK  FrameKind = "ACK"
-	NAK  FrameKind = "NAK"
+	ACK            = "ACK"
+	NAK            = "NAK"
 )
 
 type Frame struct {
@@ -32,45 +27,23 @@ type Frames []*Frame
 
 func New(k FrameKind, seq SeqNr, ack SeqNr, info packet.Packet) *Frame {
 	return &Frame{
-		k,
-		seq,
-		ack,
-		info,
+		Kind: k,
+		Seq:  seq,
+		Ack:  ack,
+		Info: info,
 	}
 }
 
-func FromBytes(bytes []byte) (*Frame, error) {
-	str := string(filterMessage(bytes))
-
-	c := config.Get()
-	if len(str) < c.MinFrameLength || len(str) > c.MaxFrameLength {
-		return nil, errors.New("Tamaño de trama")
-	}
-
-	if strings.Count(str, ":") != 3 {
-		return nil, errors.New("Separadores de trama inválidos")
-	}
-
-	arr := strings.Split(str, ":")
-	if len(arr) != 3 {
-		return nil, errors.New("Separadores de trama inválidos")
-	}
-
-	t := FrameKind(arr[0])
-
-	seq, err := strconv.Atoi(arr[1])
+func FromBytes(b []byte) (*Frame, error) {
+	p, err := packet.FromBytes(b)
 	if err != nil {
-		return nil, errors.New("SEQ inválido")
+		return nil, err
 	}
+	return New(DATA, 0, 0, *p), nil
+}
 
-	ack, err := strconv.Atoi(arr[2])
-	if err != nil {
-		return nil, errors.New("ACK inválido")
-	}
-
-	payload := packet.Packet{arr[2]}
-
-	return New(t, SeqNr(seq), SeqNr(ack), payload), nil
+func (f *Frame) ToBytes() ([]byte, error) {
+	return []byte("empty"), nil
 }
 
 func (f *Frame) NextSeq() SeqNr {
@@ -101,19 +74,4 @@ func (f *Frame) Swap() {
 	ack := f.Ack
 	f.Ack = f.Seq + 1
 	f.Seq = ack
-}
-
-func (f *Frame) ToBytes() ([]byte, error) {
-	if f.Ack < 0 || f.Seq < 0 {
-		return nil, errors.New("SEQ o ACK inválido")
-	}
-
-	str := fmt.Sprintf("%s:%d:%d:%s", f.Kind, f.Seq, f.Ack, f.Info.Data)
-
-	c := config.Get()
-	if len(str) < c.MinFrameLength || len(str) > c.MaxFrameLength {
-		return nil, errors.New("Tamaño de trama")
-	}
-
-	return []byte(str), nil
 }

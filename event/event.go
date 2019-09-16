@@ -3,7 +3,8 @@ package event
 type EventType string
 
 const (
-	FRAME_ARRIVAL EventType = "frame_arrival"
+	ERROR         EventType = "error"
+	FRAME_ARRIVAL           = "frame_arrival"
 )
 
 type Event struct {
