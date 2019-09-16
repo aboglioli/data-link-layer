@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/aboglioli/data-link-layer/config"
+	"github.com/aboglioli/data-link-layer/packet"
 )
 
 // Trama
@@ -20,20 +21,16 @@ const (
 	NAK  FrameKind = "NAK"
 )
 
-type Packet struct {
-	Data string
-}
-
 type Frame struct {
 	Kind FrameKind
 	Seq  SeqNr
 	Ack  SeqNr
-	Info Packet
+	Info packet.Packet
 }
 
 type Frames []*Frame
 
-func New(k FrameKind, seq SeqNr, ack SeqNr, info Packet) *Frame {
+func New(k FrameKind, seq SeqNr, ack SeqNr, info packet.Packet) *Frame {
 	return &Frame{
 		k,
 		seq,
@@ -71,18 +68,32 @@ func FromBytes(bytes []byte) (*Frame, error) {
 		return nil, errors.New("ACK inválido")
 	}
 
-	payload := Packet{arr[2]}
+	payload := packet.Packet{arr[2]}
 
 	return New(t, SeqNr(seq), SeqNr(ack), payload), nil
 }
 
 func (f *Frame) NextSeq() SeqNr {
-	f.Seq++
+	c := config.Get()
+
+	if f.Seq < SeqNr(c.MaxSeq) {
+		f.Seq++
+	} else {
+		f.Seq = 0
+	}
+
 	return f.Seq
 }
 
 func (f *Frame) NextAck() SeqNr {
-	f.Ack++
+	c := config.Get()
+
+	if f.Ack < SeqNr(c.MaxSeq) {
+		f.Ack++
+	} else {
+		f.Ack = 0
+	}
+
 	return f.Ack
 }
 

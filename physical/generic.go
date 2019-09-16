@@ -13,7 +13,7 @@ func NewTransmissor(rw io.ReadWriter) Interface {
 	return &generic{rw}
 }
 
-func (g *generic) ToPhysicalLayer(msg []byte) error {
+func (g *generic) Send(msg []byte) error {
 	l, err := g.rw.Write(msg)
 	if l <= 0 || err != nil {
 		return errors.New("Error en envío")
@@ -22,7 +22,7 @@ func (g *generic) ToPhysicalLayer(msg []byte) error {
 	return nil
 }
 
-func (g *generic) FromPhysicalLayer() ([]byte, error) {
+func (g *generic) Recv() ([]byte, error) {
 	msg := make([]byte, 4096)
 	l, err := g.rw.Read(msg)
 	if err != nil || l <= 0 {

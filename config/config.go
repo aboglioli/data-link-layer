@@ -23,6 +23,7 @@ type Config struct {
 	MaxFrameLength   int
 	Timeout          time.Duration
 	PayloadLength    int
+	MaxSeq           uint
 }
 
 func (c *Config) Address() string {
@@ -57,6 +58,7 @@ func Get() *Config {
 			MaxFrameLength:   64,
 			Timeout:          500 * time.Millisecond,
 			PayloadLength:    3,
+			MaxSeq:           26,
 		}
 	})
 

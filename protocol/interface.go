@@ -1,11 +1,30 @@
 package protocol
 
-type Interface interface {
-	// Detección de errores
-	CheckError([]byte) bool
+import (
+	"github.com/aboglioli/data-link-layer/event"
+	"github.com/aboglioli/data-link-layer/frame"
+	"github.com/aboglioli/data-link-layer/packet"
+)
 
-	// Servicios de transmisón
-	// utiliza frames (tramas) de fondo
-	Send([]byte) error
-	Recv() ([]byte, error)
+// Interface a implementar por el protocolo de la capa de enlace de datos
+type Interface interface {
+	// Comunicación asíncrona, espera eventos
+	WaitForEvent() <-chan event.Event
+
+	// Comunicación con la capa de Red
+	FromNetworkLayer(*packet.Packet)
+	ToNetworkLayer(*packet.Packet)
+
+	// Comunicación con la capa física
+	FromPhysicalLayer(*frame.Frame)
+	ToPhysicalLayer(*frame.Frame)
+
+	// Timers
+	StartTimer()
+	StopTimer()
+
+	// Permite que la capa de red pueda interrumpir a la capa de enlace para enviar
+	// más paquetes, o no.
+	EnableNetworkLayer()
+	DisableNetworkLayer()
 }

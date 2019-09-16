@@ -5,6 +5,26 @@ import (
 )
 
 // Implementación sobre TCP y Sockets
-func NewTCPTransmissor(rw net.Conn) Interface {
-	return &generic{rw}
+// Simple simulación utilizando sockets: un servidor <-> un client.
+func TCPServer() Interface {
+	ln, err := net.Listen("tcp", ":7788")
+	if err != nil {
+		panic(err)
+	}
+
+	conn, err := ln.Accept()
+	if err != nil {
+		panic(err)
+	}
+
+	return NewTransmissor(conn)
+}
+
+func TCPClient() Interface {
+	conn, err := net.Dial("tcp", "localhost:7788")
+	if err != nil {
+		panic(err)
+	}
+
+	return NewTransmissor(conn)
 }
