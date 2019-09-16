@@ -21,3 +21,4 @@ El principal funcionamiento de la capa de red, es decir, sus servicios, son:
 - https://github.com/azmainadel/data-link-layer-implementation
 - https://github.com/sharanyakamath/Flow-Control-in-Data-Link-Layer
 - https://github.com/briancain/Layers-Protocol
+- https://stackoverflow.com/questions/14667615/how-do-i-port-this-code-to-java

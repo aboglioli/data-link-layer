@@ -9,32 +9,36 @@ import (
 	"github.com/aboglioli/data-link-layer/config"
 )
 
-// Flags: SYN, FIN, ACK, étc
-type Flag string
+// Trama
+type SeqNr uint
+
+type FrameKind string
 
 const (
-	SYN   Flag = "SYN"   // 11110000 = 0xF0
-	FIN        = "FIN"   // 00001111 = 0x0F
-	ACK        = "ACK"   // 11111111 = 0xFF
-	ERROR      = "ERROR" // 00000000 = 0x00
+	DATA FrameKind = "DATA"
+	ACK  FrameKind = "ACK"
+	NAK  FrameKind = "NAK"
 )
 
-// Trama
+type Packet struct {
+	Data string
+}
+
 type Frame struct {
-	Type    Flag
-	Seq     int
-	Ack     int
-	Payload string
+	Kind FrameKind
+	Seq  SeqNr
+	Ack  SeqNr
+	Info Packet
 }
 
 type Frames []*Frame
 
-func New(f Flag, seq int, ack int, payload string) *Frame {
+func New(k FrameKind, seq SeqNr, ack SeqNr, info Packet) *Frame {
 	return &Frame{
-		f,
+		k,
 		seq,
 		ack,
-		payload,
+		info,
 	}
 }
 
@@ -55,7 +59,7 @@ func FromBytes(bytes []byte) (*Frame, error) {
 		return nil, errors.New("Separadores de trama inválidos")
 	}
 
-	t := Flag(arr[0])
+	t := FrameKind(arr[0])
 
 	seq, err := strconv.Atoi(arr[1])
 	if err != nil {
@@ -67,17 +71,17 @@ func FromBytes(bytes []byte) (*Frame, error) {
 		return nil, errors.New("ACK inválido")
 	}
 
-	payload := arr[2]
+	payload := Packet{arr[2]}
 
-	return New(t, seq, ack, payload), nil
+	return New(t, SeqNr(seq), SeqNr(ack), payload), nil
 }
 
-func (f *Frame) NextSeq() int {
+func (f *Frame) NextSeq() SeqNr {
 	f.Seq++
 	return f.Seq
 }
 
-func (f *Frame) NextAck() int {
+func (f *Frame) NextAck() SeqNr {
 	f.Ack++
 	return f.Ack
 }
@@ -93,7 +97,7 @@ func (f *Frame) ToBytes() ([]byte, error) {
 		return nil, errors.New("SEQ o ACK inválido")
 	}
 
-	str := fmt.Sprintf("%s:%d:%d:%s", f.Type, f.Seq, f.Ack, f.Payload)
+	str := fmt.Sprintf("%s:%d:%d:%s", f.Kind, f.Seq, f.Ack, f.Info.Data)
 
 	c := config.Get()
 	if len(str) < c.MinFrameLength || len(str) > c.MaxFrameLength {

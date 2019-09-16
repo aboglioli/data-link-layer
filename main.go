@@ -21,7 +21,7 @@ func startServer() {
 			fmt.Println("[ERROR]", err)
 		} else {
 			fmt.Println(f)
-			c.Send(&frame.Frame{frame.ACK, 1, 1, "OK"})
+			c.Send(&frame.Frame{frame.ACK, 1, 1, frame.Packet{"OK"}})
 		}
 	}
 }
@@ -32,7 +32,7 @@ func startClient() {
 		panic(err)
 	}
 
-	err = c.Send(&frame.Frame{frame.ACK, 12, 13, "Hola"})
+	err = c.Send(&frame.Frame{frame.ACK, 12, 13, frame.Packet{"Hola"}})
 	if err != nil {
 		panic(err)
 	}
