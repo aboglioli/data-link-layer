@@ -39,6 +39,8 @@ func FromBytes(b []byte) (*Frame, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// TODO: implement real frame
 	return New(DATA, 0, 0, *p), nil
 }
 

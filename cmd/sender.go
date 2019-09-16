@@ -2,29 +2,23 @@ package main
 
 import (
 	"fmt"
+	"time"
 
-	"github.com/aboglioli/data-link-layer/frame"
-	"github.com/aboglioli/data-link-layer/packet"
-	"github.com/aboglioli/data-link-layer/physical"
-	"github.com/aboglioli/data-link-layer/protocol"
+	"github.com/aboglioli/data-link-layer/implementation"
+	"github.com/aboglioli/data-link-layer/network"
 )
 
 func sender() {
-	fmt.Println("Emisor iniciado")
+	us := implementation.UtopianSimplex()
+	go us.StartSender()
+	time.Sleep(2 * time.Second)
 
-	s := physical.TCPClient()
-	fmt.Println("Interfaz física")
+	net := network.Get()
+	fmt.Println("Sending...")
+	net.Sender <- []byte("Hola")
+	fmt.Println("Sent")
 
-	p := protocol.UtopianSimplex(s)
-	fmt.Println("Implementación del protocolo")
-
-	for {
-		var f frame.Frame
-		var pk packet.Packet
-		p.FromNetworkLayer(&pk)
-		f.Info = pk
-		p.ToPhysicalLayer(&f)
-	}
+	us.Wait()
 }
 
 func main() {

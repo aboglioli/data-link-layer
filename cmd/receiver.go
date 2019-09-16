@@ -2,36 +2,23 @@ package main
 
 import (
 	"fmt"
+	"time"
 
-	"github.com/aboglioli/data-link-layer/event"
-	"github.com/aboglioli/data-link-layer/frame"
-	"github.com/aboglioli/data-link-layer/physical"
-	"github.com/aboglioli/data-link-layer/protocol"
+	"github.com/aboglioli/data-link-layer/implementation"
+	"github.com/aboglioli/data-link-layer/network"
 )
 
 func receiver() {
-	fmt.Println("Receptor iniciado")
+	us := implementation.UtopianSimplex()
+	go us.StartReceiver()
+	time.Sleep(1 * time.Second)
 
-	s := physical.TCPServer()
-	fmt.Println("Interfaz física")
+	net := network.Get()
 
-	p := protocol.UtopianSimplex(s)
-	fmt.Println("Implementación del protocolo")
+	b := <-net.Receiver
+	fmt.Println(b)
 
-	fmt.Println("Esperando por eventos")
-	for e := range p.WaitForEvent() {
-		if e.Type == event.ERROR || e.Type == event.FRAME_ARRIVAL {
-			fmt.Println("[ERROR]", e)
-		}
-
-		var f frame.Frame
-
-		p.FromPhysicalLayer(&f)
-		fmt.Println("FromPhysicalLayer", f)
-
-		p.ToNetworkLayer(&f.Info)
-		fmt.Println("ToNetworkLayer", f.Info)
-	}
+	us.Wait()
 }
 
 func main() {

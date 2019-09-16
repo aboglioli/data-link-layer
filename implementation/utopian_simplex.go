@@ -3,61 +3,64 @@ package implementation
 import (
 	"fmt"
 
-	"github.com/aboglioli/data-link-layer/event"
 	"github.com/aboglioli/data-link-layer/frame"
 	"github.com/aboglioli/data-link-layer/packet"
 	"github.com/aboglioli/data-link-layer/physical"
 	"github.com/aboglioli/data-link-layer/protocol"
 )
 
-type UtopianSimplex struct {
+type utopianSimplex struct {
+	done chan bool
 }
 
-func UtopianSimplex() *UtopianSimplex {
-	return &UtopianSimplex{}
+func UtopianSimplex() *utopianSimplex {
+	return &utopianSimplex{
+		done: make(chan bool),
+	}
 }
 
-func (u *UtopianSimplex) StartReceiver() {
+func (u *utopianSimplex) StartReceiver() {
 	fmt.Println("Receptor iniciado")
 
-	s := physical.TCPServer()
-	fmt.Println("Esperando clientes")
+	phy := physical.TCPServer()
 
-	p := protocol.UtopianSimplex(s)
+	prot := protocol.NewGeneric(phy)
 
-	fmt.Println("Esperando por eventos")
-	for e := range p.WaitForEvent() {
-		if e.Type == event.ERROR || e.Type == event.FRAME_ARRIVAL {
-			fmt.Println("[ERROR]", e)
-		}
-
+	for {
 		var f frame.Frame
 
-		p.FromPhysicalLayer(&f)
+		prot.FromPhysicalLayer(&f)
 		fmt.Println("FromPhysicalLayer", f)
 
-		p.ToNetworkLayer(&f.Info)
+		prot.ToNetworkLayer(&f.Info)
 		fmt.Println("ToNetworkLayer", f.Info)
 	}
 }
 
-func (u *UtopianSimplex) StartSender() {
+func (u *utopianSimplex) StartSender() {
 	fmt.Println("Emisor iniciado")
 
-	s := physical.TCPClient()
-	fmt.Println("Esperando servidor")
+	phy := physical.TCPClient()
 
-	p := protocol.UtopianSimplex(s)
+	prot := protocol.NewGeneric(phy)
 
 	for {
 		var f frame.Frame
 		var pk packet.Packet
-		p.FromNetworkLayer(&pk)
+		prot.FromNetworkLayer(&pk)
 		fmt.Println("FromNetworkLayer", pk)
 
 		f.Info = pk
 
-		p.ToPhysicalLayer(&f)
+		prot.ToPhysicalLayer(&f)
 		fmt.Println("ToPhysicalLayer", f)
 	}
+}
+
+func (u *utopianSimplex) Stop() {
+	u.done <- true
+}
+
+func (u *utopianSimplex) Wait() bool {
+	return <-u.done
 }
