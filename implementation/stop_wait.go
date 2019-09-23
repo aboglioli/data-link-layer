@@ -1,39 +1,35 @@
 package implementation
 
 import (
-	"fmt"
-
 	"github.com/aboglioli/data-link-layer/frame"
 	"github.com/aboglioli/data-link-layer/packet"
 	"github.com/aboglioli/data-link-layer/physical"
 	"github.com/aboglioli/data-link-layer/protocol"
 )
 
-type utopianSimplex struct {
+type stopWait struct {
 	done chan bool
 }
 
-func UtopianSimplex() *utopianSimplex {
-	return &utopianSimplex{
+func StopWait() *stopWait {
+	return &stopWait{
 		done: make(chan bool),
 	}
 }
 
-func (u *utopianSimplex) StartReceiver() {
+func (s *stopWait) StartReceiver() {
 	phy := physical.TCPServer()
 
 	prot := protocol.NewGeneric(phy)
 
-	for e := range prot.WaitForEvent() {
-		fmt.Println("Evento:", e)
-
+	for {
 		var f frame.Frame
 		prot.FromPhysicalLayer(&f)
 		prot.ToNetworkLayer(&f.Info)
 	}
 }
 
-func (u *utopianSimplex) StartSender() {
+func (s *stopWait) StartSender() {
 	phy := physical.TCPClient()
 
 	prot := protocol.NewGeneric(phy)
@@ -47,10 +43,10 @@ func (u *utopianSimplex) StartSender() {
 	}
 }
 
-func (u *utopianSimplex) Stop() {
-	u.done <- true
+func (s *stopWait) Stop() {
+	s.done <- true
 }
 
-func (u *utopianSimplex) Wait() bool {
-	return <-u.done
+func (s *stopWait) Wait() bool {
+	return <-s.done
 }
