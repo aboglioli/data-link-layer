@@ -14,6 +14,6 @@ func FromBytes(b []byte) (*Packet, error) {
 	return New(string(b)), nil
 }
 
-func (p *Packet) ToBytes() ([]byte, error) {
-	return []byte(p.Data), nil
+func (p *Packet) ToBytes() []byte {
+	return []byte(p.Data)
 }

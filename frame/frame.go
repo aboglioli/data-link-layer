@@ -1,14 +1,27 @@
 package frame
 
 import (
+	"encoding/binary"
+
 	"github.com/aboglioli/data-link-layer/config"
 	"github.com/aboglioli/data-link-layer/packet"
 )
 
-// Trama
-type SeqNr uint
+// Número de secuencia
+type SeqNr uint32
 
+func (s SeqNr) ToBytes() []byte {
+	b := make([]byte, 4)
+	binary.LittleEndian.PutUint32(b, uint32(s))
+	return b
+}
+
+// Tipo de frame
 type FrameKind string
+
+func (f FrameKind) ToBytes() []byte {
+	return []byte(f)
+}
 
 const (
 	DATA FrameKind = "DATA"
@@ -44,8 +57,13 @@ func FromBytes(b []byte) (*Frame, error) {
 	return New(DATA, 0, 0, *p), nil
 }
 
-func (f *Frame) ToBytes() ([]byte, error) {
-	return []byte("empty"), nil
+func (f *Frame) ToBytes() []byte {
+	var b []byte
+	b = append(b, f.Kind.ToBytes()...)
+	b = append(b, f.Seq.ToBytes()...)
+	b = append(b, f.Ack.ToBytes()...)
+	b = append(b, f.Info.ToBytes()...)
+	return b
 }
 
 func (f *Frame) NextSeq() SeqNr {

@@ -1,7 +1,6 @@
 package protocol
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/aboglioli/data-link-layer/event"
@@ -30,11 +29,8 @@ func (g *generic) WaitForEvent() <-chan event.Event {
 
 func (g *generic) FromNetworkLayer(p *packet.Packet) {
 	net := network.Get()
-	fmt.Println("[FromNetworkLayer:start]")
 
 	b := <-net.Sender
-
-	fmt.Println("[FromNetworkLayer:middle]")
 
 	np, err := packet.FromBytes(b)
 	if err != nil {
@@ -42,34 +38,21 @@ func (g *generic) FromNetworkLayer(p *packet.Packet) {
 	}
 
 	*p = *np
-
-	fmt.Println("[FromNetworkLayer:end]")
 }
 
 func (g *generic) ToNetworkLayer(p *packet.Packet) {
 	net := network.Get()
 
-	fmt.Println("[ToNetworkLayer:start]")
-	b, err := p.ToBytes()
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("[ToNetworkLayer:middle]")
+	b := p.ToBytes()
 
 	net.Receiver <- b
-
-	fmt.Println("[ToNetworkLayer:end]")
 }
 
 func (g *generic) FromPhysicalLayer(f *frame.Frame) {
-	fmt.Println("[FromPhysicalLayer:start]")
 	b, err := g.physical.Recv()
 	if err != nil {
 		g.event <- event.Event{Type: event.ERROR}
 	}
-
-	fmt.Println("[FromPhysicalLayer:middle]")
 
 	nf, err := frame.FromBytes(b)
 	if err != nil {
@@ -77,25 +60,15 @@ func (g *generic) FromPhysicalLayer(f *frame.Frame) {
 	}
 
 	*f = *nf
-
-	fmt.Println("[FromPhysicalLayer:end]")
 }
 
 func (g *generic) ToPhysicalLayer(f *frame.Frame) {
-	fmt.Println("[ToPhysicalLayer:start]")
-	b, err := f.ToBytes()
+	b := f.ToBytes()
+
+	err := g.physical.Send(b)
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Println("[ToPhysicalLayer:middle]")
-
-	err = g.physical.Send(b)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("[ToPhysicalLayer:end]")
 }
 
 func (g *generic) StartTimer()          {}

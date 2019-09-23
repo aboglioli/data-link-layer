@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/aboglioli/data-link-layer/implementation"
 	"github.com/aboglioli/data-link-layer/network"
@@ -11,12 +10,14 @@ import (
 func sender() {
 	us := implementation.UtopianSimplex()
 	go us.StartSender()
-	time.Sleep(2 * time.Second)
 
 	net := network.Get()
-	fmt.Println("Sending...")
+
+	fmt.Println("Enviando: \"Hola\"")
 	net.Sender <- []byte("Hola")
-	fmt.Println("Sent")
+
+	fmt.Println("Enviando: \"Chau\"")
+	net.Sender <- []byte("Chau")
 
 	us.Wait()
 }
