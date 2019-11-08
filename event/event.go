@@ -1,5 +1,8 @@
 package event
 
+// Los posibles eventos de una trama para una implementación básica: Se producen
+// errores, llega una nueva trama desde la capa física o se recibe una nueva
+// trama desde la capa de red.
 type EventType string
 
 const (

@@ -6,7 +6,8 @@ import (
 	"github.com/aboglioli/data-link-layer/packet"
 )
 
-// Interface a implementar por el protocolo de la capa de enlace de datos
+// Interface a implementar por el protocolo de la capa de enlace de datos.
+// Idéntica a la presentada en Redes de Información de Tanenbaum.
 type Interface interface {
 	// Comunicación asíncrona, espera eventos
 	WaitForEvent() <-chan event.Event

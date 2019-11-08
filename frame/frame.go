@@ -29,6 +29,9 @@ const (
 	NAK            = "NAK"
 )
 
+// Una trama es la estructura de datos básica que maneja la capa de enlace.
+// Posee número de secuencia y de confirmación para controlar el flujo de datos
+// entre emisor y receptor, más la carga útil proveniente de la capa de red.
 type Frame struct {
 	Kind FrameKind
 	Seq  SeqNr
@@ -47,6 +50,9 @@ func New(k FrameKind, seq SeqNr, ack SeqNr, info packet.Packet) *Frame {
 	}
 }
 
+// La trama debe poder convertirse hacia y desde bytes, ya que a nivel de
+// lenguaje se utilizan estructuras pero la capa física utiliza bits para la
+// comunicación punto a punto con otros hosts.
 func FromBytes(b []byte) (*Frame, error) {
 	p, err := packet.FromBytes(b)
 	if err != nil {

@@ -3,12 +3,33 @@
 Este proyecto intenta simular el funcionamiento de la **Capa de Enlace** en
 redes.
 
-Está desarrollado en [Go](https://golang.org).
+Está desarrollado en [Go](https://golang.org). Se eligió este lenguaje por su
+facilidad para manejar múltiples hilos, ya que *multi-threading* es en lo que
+está enfocado.
 
 El principal funcionamiento de la capa de red, es decir, sus servicios, son:
 
 - Detección y/o corrección de errores
 - Control de flujo
+
+Hay una implementación básica de un receptor y emisor *utópicos simples*. No
+hay detección de errores, sin embargo, si se controla el flujo.
+
+Leer comentarios del código para entender el funcionamiento básico.
+
+## Uso
+
+Ejecutar receptor primero:
+
+```
+go run cmd/utopian_simplex_receiver.go
+```
+
+Luego, ejecutar emisor:
+
+```
+go run cmd/utopian_simplex_sender.go
+```
 
 ## Información, referencias, ejemplos e implementaciones
 
