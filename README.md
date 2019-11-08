@@ -1,4 +1,4 @@
-# Data Link simulation
+# Simulación de Capa de Enlace interactuando con Capa de Red y Física
 
 Este proyecto intenta simular el funcionamiento de la **Capa de Enlace** en
 redes. Se realizó para la cátedra **Redes de Información** de FRM-UTN.
