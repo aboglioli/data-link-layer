@@ -1,7 +1,10 @@
 # Data Link simulation
 
 Este proyecto intenta simular el funcionamiento de la **Capa de Enlace** en
-redes.
+redes. Se realizó para la cátedra **Redes de Información** de FRM-UTN.
+
+El proyecto puede encontrarse en
+[github.com/aboglioli/data-link-layer](https://github.com/aboglioli/data-link-layer)
 
 Está desarrollado en [Go](https://golang.org). Se eligió este lenguaje por su
 facilidad para manejar múltiples hilos, ya que *multi-threading* es en lo que
